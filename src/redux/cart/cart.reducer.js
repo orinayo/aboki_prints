@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import { addItemToCart } from './cart.utils';
 
 
-const cartItemsbyId = (state = {}, action) => {
+const cartItemsById = (state = {}, action) => {
   switch (action.type) {
     case CartActionTypes.ADD_ITEM:
       return addItemToCart(state, action.payload);
@@ -12,7 +12,7 @@ const cartItemsbyId = (state = {}, action) => {
   }
 };
 
-const allCartItemsId = (state = [], action) => {
+const allCartItemsIds = (state = [], action) => {
   switch (action.type) {
     case CartActionTypes.ADD_ITEM:
       return [...new Set([...state, action.payload.id])];
@@ -22,26 +22,25 @@ const allCartItemsId = (state = [], action) => {
 };
 
 const cartHidden = (
-    state = {
-      hidden: true,
-    },
+    state = true,
     action
 ) => {
   switch (action.type) {
     case CartActionTypes.TOGGLE_CART_HIDDEN:
-      return {
-        ...state,
-        hidden: !state.hidden,
-      };
+      return !state;
     default:
       return state;
   }
 };
 
+const cartItemsReducer = combineReducers({
+  byId: cartItemsById,
+  allIds: allCartItemsIds,
+});
+
 const cartReducer = combineReducers({
   hidden: cartHidden,
-  byId: cartItemsbyId,
-  allIds: allCartItemsId,
+  items: cartItemsReducer,
 });
 
 export default cartReducer;
