@@ -1,20 +1,22 @@
-import {CartActionTypes} from './cart.types';
-import {combineReducers} from 'redux';
-import {addItemToCart, removeItemFromCart} from './cart.utils';
+import CartActionTypes from "./cart.types";
+import { combineReducers } from "redux";
+import { addItemToCart, removeItemFromCart } from "./cart.utils";
 
 const cartItemsById = (state = {}, action) => {
   switch (action.type) {
     case CartActionTypes.ADD_ITEM:
       return addItemToCart(state, action.payload);
     case CartActionTypes.CLEAR_ITEM_FROM_CART: {
-      const stateCopy = {...state};
+      const stateCopy = { ...state };
       delete stateCopy[action.payload];
       return {
-        ...stateCopy,
+        ...stateCopy
       };
     }
     case CartActionTypes.REMOVE_ITEM:
       return removeItemFromCart(state, action.payload);
+    case CartActionTypes.CLEAR_CART:
+      return {}
     default:
       return state;
   }
@@ -25,11 +27,13 @@ const allCartItemsIds = (state = [], action) => {
     case CartActionTypes.ADD_ITEM:
       return [...new Set([...state, action.payload.id])];
     case CartActionTypes.CLEAR_ITEM_FROM_CART:
-      return state.filter((id) => id !== action.payload);
+      return state.filter(id => id !== action.payload);
     case CartActionTypes.REMOVE_ITEM: {
       if (action.payload.quantity !== 1) return state;
-      return state.filter((id) => id !== action.payload.id);
+      return state.filter(id => id !== action.payload.id);
     }
+    case CartActionTypes.CLEAR_CART:
+      return []
     default:
       return state;
   }
@@ -46,12 +50,12 @@ const cartHidden = (state = true, action) => {
 
 const cartItemsReducer = combineReducers({
   byId: cartItemsById,
-  allIds: allCartItemsIds,
+  allIds: allCartItemsIds
 });
 
 const cartReducer = combineReducers({
   hidden: cartHidden,
-  items: cartItemsReducer,
+  items: cartItemsReducer
 });
 
 export default cartReducer;

@@ -1,47 +1,36 @@
-import React from 'react';
-import FormInput from '../form-input/form-input.component';
-import CustomButton from '../custom-button/custom-button.component';
-import {auth, createUserProfileDocument} from '../../firebase/firebase.utils';
-import {SignUpContainer, SignUpTitle} from './sign-up.styles';
+import React from "react";
+import { connect } from "react-redux";
+import FormInput from "../form-input/form-input.component";
+import CustomButton from "../custom-button/custom-button.component";
+import { SignUpContainer, SignUpTitle } from "./sign-up.styles";
+import userActions from "../../redux/user/user.actions";
 
 class SignUp extends React.Component {
   state = {
-    displayName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    displayName: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
   };
 
-  handleChange = (event) => {
-    const {value, name} = event.target;
-    this.setState({[name]: value});
+  handleChange = event => {
+    const { value, name } = event.target;
+    this.setState({ [name]: value });
   };
 
-  handleSubmit = async (event) => {
+  handleSubmit = async event => {
     event.preventDefault();
-    const {displayName, email, password, confirmPassword} = this.state;
-
+    const { displayName, email, password, confirmPassword } = this.state;
+    const { signUpStart } = this.props;
     if (password !== confirmPassword) {
-      alert('Passwords don\'t match');
+      alert("Passwords don't match");
       return;
     }
-
-    try {
-      const {user} = await auth.createUserWithEmailAndPassword(email, password);
-      createUserProfileDocument(user, {displayName});
-      this.setState({
-        displayName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    signUpStart({ displayName, email, password });
   };
 
   render() {
-    const {displayName, email, password, confirmPassword} = this.state;
+    const { displayName, email, password, confirmPassword } = this.state;
     return (
       <SignUpContainer>
         <SignUpTitle>I do not have an account</SignUpTitle>
@@ -86,4 +75,5 @@ class SignUp extends React.Component {
   }
 }
 
-export default SignUp;
+const { signUpStart } = userActions;
+export default connect(null, { signUpStart })(SignUp);
